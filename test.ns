@@ -1,0 +1,15 @@
+1 - Class: Deneme {
+    PRINT ("Lots of work")
+    MEM (["This", "that"])
+    WORK ("This is what you work")
+}
+2 - Class: Deneme {
+    PRINT ("Lots of work")
+    MEM (["This", "that"])
+    WORK ("This is what you work")
+}
+3 - Class: Deneme {
+    PRINT ("Lots of work")
+    MEM (["This", "that"])
+    WORK ("This is what you work")
+}

@@ -1,6 +1,7 @@
 """
     A module to use logging and printing
 """
+from pprint import pprint
 from colorama import Fore, init
 init(autoreset=True)
 def print_error(*args, **kwargs):
@@ -26,3 +27,9 @@ def print_debug(*args, **kwargs):
         Print wrapper to write debugs
     """
     print(Fore.YELLOW + "[DEBUG]", *args, **kwargs)
+
+def pretty_print(*args, **kwargs):
+    """
+        A wrapper for pretty print
+    """
+    pprint(*args, **kwargs)
