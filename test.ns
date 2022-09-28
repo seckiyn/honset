@@ -1,14 +1,22 @@
+1 - task_name : task string {
+    PRINT ("HELLO, WORLD")
+}
+8 - print_this_in_the_last: Deneme {
+    PRINT ("Lots of work")
+    MEM (["This", "that"])
+    WORK ("This is what you work")
+}
 1 - Class: Deneme {
     PRINT ("Lots of work")
     MEM (["This", "that"])
     WORK ("This is what you work")
 }
-2 - Class: Deneme {
+2 - Hello: Deneme {
     PRINT ("Lots of work")
     MEM (["This", "that"])
     WORK ("This is what you work")
 }
-3 - Class: Deneme {
+3 - World: Deneme with more than one word {
     PRINT ("Lots of work")
     MEM (["This", "that"])
     WORK ("This is what you work")

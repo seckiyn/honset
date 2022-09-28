@@ -4,14 +4,17 @@
 from enum import Enum, auto
 from dataclasses import dataclass
 from logs import print_debug # print_error, print_info, print_done, print_debug
+
+# TODO: We probably don't need these
+"""
 class TaskType(Enum):
-    """
+    \"\"\"
         Enumaration that contains type of tasks
-    """
+    \"\"\"
     MEMO = auto()
     WORK = auto()
     PRINT = auto()
-
+"""
 @dataclass
 class TaskContainer:
     """
@@ -23,12 +26,14 @@ class TaskContainer:
     task_index: int
     task_name: str
     task_string: str
+# TODO: We probably don't need these
+"""
 TaskTypeNames = {
         "memo": TaskType.MEMO,
         "work": TaskType.WORK,
         "print": TaskType.PRINT
         }
-
+"""
 
 def lex_task_from_text(text: str) -> tuple:
     """

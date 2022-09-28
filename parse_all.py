@@ -12,7 +12,7 @@ SCRIPT_PATH = dirname(realpath(__file__))
 FOLDER = "" # "tasks"
 EXT = ".ns"
 
-print(SCRIPT_PATH)
+# print(SCRIPT_PATH)
 @dataclass
 class Task:
     """
