@@ -45,7 +45,7 @@ def parse_all_execute(execute: str) -> Tuple[Execution]:
         single Execution's
     """
     execute = execute[1:-1] # Strip the curly brackets
-    lines = [e.strip() for e in execute.split("\n") if e]
+    lines = [e.strip() for e in execute.split("\n") if e.strip()]
     all_executes = list()
     for single_execute in lines:
         parsed_execute = parse_single_execute(single_execute)
@@ -70,7 +70,7 @@ def divide_into_task_execute(text: str) -> tuple:
     prog = re.compile(regex)
     findall = prog.findall(text)
     return tuple(findall)
-def parse_all_task_execute(task_execute: Tuple[Tuple[str]]) -> Tuple[Task]:
+def parse_all_task_execute(task_execute: Tuple[Tuple[str, str]]) -> Tuple[Task]:
     """
         Gets the
         TASK{EXECUTE}*
@@ -90,6 +90,23 @@ def parse_the_file(filename: str) -> List[List[Execution]]:
         Main function to parsing of the file
     """
     file_container = read_file(filename)
+    task_unparsed_container = divide_into_task_execute(file_container)
+    tasks = parse_all_task_execute(task_unparsed_container)
+    return tasks
+
+def read_the_file_current(filename: str) -> str:
+    """
+        Opens and reads filename and returns the containing
+    """
+    file_container = None
+    filename += ".ns"
+    with open(filename, "r") as file:
+        file_container = file.read()
+    if not file_container:
+        raise SyntaxError("The file is empty")
+    return file_container
+def parse_the_file_current(filename: str) -> List[List[Execution]]:
+    file_container = read_the_file_current(filename)
     task_unparsed_container = divide_into_task_execute(file_container)
     tasks = parse_all_task_execute(task_unparsed_container)
     return tasks

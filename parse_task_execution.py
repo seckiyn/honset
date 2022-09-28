@@ -3,9 +3,11 @@
     PRINT("HELLO WORLD")
     MEM  ("HELLOW")
 """
+from typing import Tuple
 from typing import Union
 from dataclasses import dataclass
 from enum import Enum, auto
+from logs import print_debug
 
 # from logs import print_info, print_debug
 class TokenType(Enum):
@@ -131,7 +133,7 @@ class Execution:
     execute: ExecutionType
     value: Union[str, list]
 
-def check_paren(tokens: tuple, word: ExecutionType) -> tuple:
+def check_paren(tokens: Tuple, word: ExecutionType) -> Tuple:
     """
         Checks if token list has parens if needed
     """
