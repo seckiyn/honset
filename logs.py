@@ -4,17 +4,18 @@
 from pprint import pprint
 from colorama import Fore, init
 init(autoreset=True)
+DEBUG = False
 def print_error(*args, **kwargs):
     """
         Print wrapper to write errors
     """
-    print(Fore.RED + "[ERROR]: ", *args, **kwargs)
+    if DEBUG: print(Fore.RED + "[ERROR]: ", *args, **kwargs)
 
 def print_info(*args, **kwargs):
     """
         Print wrapper to write info
     """
-    print(Fore.BLUE + "[INFO]: ", *args, **kwargs)
+    if DEBUG: print(Fore.BLUE + "[INFO]: ", *args, **kwargs)
 
 def print_done(*args, **kwargs):
     """
@@ -26,10 +27,4 @@ def print_debug(*args, **kwargs):
     """
         Print wrapper to write debugs
     """
-    print(Fore.YELLOW + "[DEBUG]", *args, **kwargs)
-
-def pretty_print(*args, **kwargs):
-    """
-        A wrapper for pretty print
-    """
-    pprint(*args, **kwargs)
+    if DEBUG: print(Fore.YELLOW + "[DEBUG]", *args, **kwargs)

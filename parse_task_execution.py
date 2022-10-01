@@ -3,13 +3,12 @@
     PRINT("HELLO WORLD")
     MEM  ("HELLOW")
 """
-from typing import Tuple
+from typing import Tuple, List
 from typing import Union
 from dataclasses import dataclass
 from enum import Enum, auto
-from logs import print_debug
+from logs import print_debug, print_error
 
-# from logs import print_info, print_debug
 class TokenType(Enum):
     """
         TokenType
@@ -19,6 +18,7 @@ class TokenType(Enum):
     WORD = auto()
     LIST = auto()
     STRING_LITERAL = auto()
+    SEP = auto()
 
 
 def get_string_token(text, index):
@@ -29,8 +29,6 @@ def get_string_token(text, index):
     while index < len(text) and text[index].isalnum():
         string += text[index]
         index += 1
-        # print("character is ' '", character == " ")
-    # print(string)
     return index-1, string
 
 def get_string_literal_token(text, index):
@@ -43,8 +41,6 @@ def get_string_literal_token(text, index):
     while index < len(text) and text[index] != "\"":
         string += text[index]
         index += 1
-        # print("character is ' '", character == " ")
-    # print(string)
     return index+1, string
 def get_list_token(text, index):
     """
@@ -55,8 +51,6 @@ def get_list_token(text, index):
     tokens = list()
     while index < len(text) and text[index] != "]":
         index, token = get_next_token(text, index)
-        # print_debug("Token list", tokens)
-        # print_debug("Token is", token)
         tokens.append(token)
     return index+1, tokens
 def get_next_token(text, index):
@@ -87,8 +81,10 @@ def get_next_token(text, index):
             index += 1
             continue
         if text[index] == "]":
-            # print("heya")
             return index, token
+        if text[index] == ";":
+            index += 1
+            return index, (TokenType.SEP, None)
         raise Exception(f"Unreachable \"{text[index]}\"")
     return index, token
 
@@ -122,6 +118,7 @@ class ExecutionType(Enum):
     MEM = auto()
     WORK = auto()
     PRINT = auto()
+    CONTAINER = auto()
 @dataclass
 class Execution:
     """
@@ -131,7 +128,7 @@ class Execution:
         PRINT: PRINT LPAREN STRING RPAREN
     """
     execute: ExecutionType
-    value: Union[str, list]
+    value: Union[str, list, tuple]
 
 def check_paren(tokens: Tuple, word: ExecutionType) -> Tuple:
     """
@@ -152,32 +149,37 @@ def get_parse_execution(text: str) -> Execution:
     """
     assert bool(text), "Text must be checked before get_parse_execution"
     tokens = get_lex_execution(text)
+    return get_parse_execution_by_token(tokens)
+
+def get_parse_execution_by_token(tokens: List[TokenType]):
     execution_token = None
     if len(tokens) != 1:
         execution_token, *tokens = tokens
     else:
         execution_token = tokens[0]
-        print_debug(execution_token)
-    # print_debug(tokens)
     assert len(tokens) != 0, "Text must be contain at least 1 token\
             before passed get_parse_execution"
     execution_token, value = execution_token
     value = value.upper()
     if execution_token != TokenType.WORD:
         raise SyntaxError("Execution should start with a WORD")
-    assert len(ExecutionType) == 3, "You forgot to parse a new execution"
+    assert len(ExecutionType) == 4, "You forgot to parse a new execution"
     # PARSING OF WORDS
     if value == "MEM":
         name_of_the_execution = ExecutionType.MEM
         tokens = check_paren(tokens, name_of_the_execution)
-        if len(tokens) != 1:
-            raise SyntaxError(f"Too many arguments for {name_of_the_execution}:Arguments({tokens})")
-        list_token, list_value = tokens[0]
+        if len(tokens) != 2:
+            raise SyntaxError(f"Too less arguments for {name_of_the_execution}:arguments({tokens})")
+        string_literal_token, string_literal_value = tokens[0]
+        if string_literal_token != TokenType.STRING_LITERAL:
+            raise SyntaxError(f"{name_of_the_execution} only accepts\
+                    a {TokenType.STRING_LITERAL} you passed {string_literal_token}")
+        list_token, list_value = tokens[1]
         if list_token != TokenType.LIST:
             raise SyntaxError(f"{name_of_the_execution} only accepts\
                     a {TokenType.LIST} you passed {list_token}")
         listed_token_value = [lv[1].strip() for lv in list_value]
-        return Execution(name_of_the_execution, listed_token_value)
+        return Execution(name_of_the_execution, (string_literal_value, listed_token_value))
 
     if value == "PRINT":
         name_of_the_execution = ExecutionType.PRINT
@@ -201,9 +203,30 @@ def get_parse_execution(text: str) -> Execution:
                     a {TokenType.STRING_LITERAL} you passed {list_token}")
         string_value = print_value
         return Execution(name_of_the_execution, string_value)
-    raise SyntaxError(f"This is a unknow WORD: {value}")
+    if value == "CONTAINER":
+        name_of_the_execution = ExecutionType.CONTAINER
+        tokens = check_paren(tokens, name_of_the_execution)
+        list_of_executes = seperate_by_token(tokens)
+        list_of_executions = list()
+        for executable in list_of_executes:
+            container_execution = get_parse_execution_by_token(executable)
+            list_of_executions.append(container_execution)
 
+        return Execution(name_of_the_execution, list_of_executions)
 
+    raise SyntaxError(f"This is a unknown WORD: {value}")
+
+def seperate_by_token(tokens):
+    list_of_executions = list()
+    temp_list = list()
+    for token in tokens:
+        if token[0] != TokenType.SEP:
+            temp_list.append(token)
+        else:
+            list_of_executions.append(list(temp_list))
+            temp_list = []
+    list_of_executions.append(temp_list)
+    return list_of_executions
 
 
 if __name__ == "__main__":

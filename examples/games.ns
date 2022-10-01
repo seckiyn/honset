@@ -1,7 +1,10 @@
-1 - Mem : This is a test for games {
-    
-    PRINT ("Lots of work")
-    MEM (["This", "that"])
+1 - Mem : This is a test for games { 
+    MEM ("Name of this and that", ["This", "that"])
+}
 
+2 - Hello : What are you doing {
+    PRINT("HELLO, WORLD")
+    MEM("", ["hi"])
+    CONTAINER(CONTAINER(CONTAINER(PRINT("Container 1"))); MEM("Container 2", ["yey"]))
 }
 

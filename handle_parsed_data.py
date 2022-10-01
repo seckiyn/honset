@@ -12,9 +12,26 @@ def handle_execution_work(value):
     print(value)
 
 def handle_execution_mem(value):
-    print(*value)
+    """
+        Handle the occurance of TokenType.MEM
+    """
+    print("Can you recite this?")
+    print(value[0])
+    to_memorize = value[1]
+    to_memorize = [i.lower() for i in to_memorize]
+    while to_memorize:
+        answer = input("Answer: ").lower().strip()
+        if answer in to_memorize:
+            to_memorize.remove(answer)
+        else:
+            print("This is wrong!")
+    print("Congrulations")
+
+def handle_execution_container(value):
+    for execute in value:
+        handle_execution(execute)
 def handle_execution(execution: Execution):
-    assert len(ExecutionType) == 3, "You forgot to handle and \
+    assert len(ExecutionType) == 4, "You forgot to handle and \
 execution on handle_parsed_data:handle_execution"
     to_execute = execution.execute
     value = execution.value
@@ -25,6 +42,8 @@ execution on handle_parsed_data:handle_execution"
         handle_execution_work(value)
     if to_execute == ExecutionType.MEM:
         handle_execution_mem(value)
+    if to_execute == ExecutionType.CONTAINER:
+        handle_execution_container(value)
 
 
     # print(to_execute)

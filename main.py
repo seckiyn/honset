@@ -24,11 +24,9 @@ def args() -> int:
     script_name, *arguments = arguments
     if "-f" in arguments or "--file" in arguments:
         file, *filename = arguments
-        print(filename)
         if len(filename) != 1:
             sys.exit(1)
         filename = filename[0]
-        print(filename)
         return parse_file(filename)
     return usage()
 
@@ -37,7 +35,6 @@ def main() -> int:
     """
         Main function
     """
-    handle_data(parse_the_file("games"))
     return args()
 
 
