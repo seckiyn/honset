@@ -1,7 +1,7 @@
 1 - Mem : This is a test for games {
 
     PRINT ("Lots of work")
-    MEM (["This", "that"])
+    MEM ("What is this and that", ["This", "that"])
 
 
 
