@@ -80,7 +80,7 @@ def parse_all_task_execute(task_execute: Tuple[Tuple[str, str]]) -> Tuple[Task]:
         Task
     """
     all_tasks = list()
-    for task, execute in task_execute:
+    for index, (task, execute) in enumerate(task_execute):
         parsed_task = parse_single_task(task)
         parsed_execute = parse_all_execute(execute)
         all_tasks.append(Task(parsed_task, parsed_execute))

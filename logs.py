@@ -4,7 +4,7 @@
 from pprint import pprint
 from colorama import Fore, init
 init(autoreset=True)
-DEBUG = False
+DEBUG = True
 def print_error(*args, **kwargs):
     """
         Print wrapper to write errors

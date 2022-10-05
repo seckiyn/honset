@@ -7,7 +7,7 @@ from typing import Tuple, List
 from typing import Union
 from dataclasses import dataclass
 from enum import Enum, auto
-from logs import print_debug, print_error
+from logs import print_debug, print_error, print_done
 
 class TokenType(Enum):
     """
@@ -119,6 +119,9 @@ class ExecutionType(Enum):
     WORK = auto()
     PRINT = auto()
     CONTAINER = auto()
+    PLACE = auto()
+    IF = auto()
+
 @dataclass
 class Execution:
     """
@@ -129,18 +132,21 @@ class Execution:
     """
     execute: ExecutionType
     value: Union[str, list, tuple]
+    # position: Tuple
 
 def check_paren(tokens: Tuple, word: ExecutionType) -> Tuple:
     """
         Checks if token list has parens if needed
     """
+    old_tokens = tokens[:]
     paren_start, *tokens = tokens
     if len(tokens) < 1:
         raise SyntaxError("There's not enough tokens to parse in check_parentheses")
     *tokens, paren_end = tokens
     if (paren_start[0] != TokenType.LEFT_PAREN or
             paren_end[0] != TokenType.RIGHT_PAREN):
-        raise SyntaxError(f"{word} need parens")
+        print(*old_tokens, sep="\n")
+        raise SyntaxError(f"{word} need parens, tokens: ")
     return tokens
 
 def get_parse_execution(text: str) -> Execution:
@@ -163,7 +169,7 @@ def get_parse_execution_by_token(tokens: List[TokenType]):
     value = value.upper()
     if execution_token != TokenType.WORD:
         raise SyntaxError("Execution should start with a WORD")
-    assert len(ExecutionType) == 4, "You forgot to parse a new execution"
+    assert len(ExecutionType) == 6, "You forgot to parse a new execution"
     # PARSING OF WORDS
     if value == "MEM":
         name_of_the_execution = ExecutionType.MEM
@@ -213,6 +219,41 @@ def get_parse_execution_by_token(tokens: List[TokenType]):
             list_of_executions.append(container_execution)
 
         return Execution(name_of_the_execution, list_of_executions)
+    if value == "PLACE":
+        name_of_the_execution = ExecutionType.PLACE
+        tokens = check_paren(tokens, name_of_the_execution)
+        if len(tokens) != 2:
+            raise SyntaxError(f"{name_of_the_execution} takes two arguments")
+        place_token, place_value = tokens[0]
+        print_done(place_token)
+        if place_token != TokenType.STRING_LITERAL:
+            raise SyntaxError(f"{name_of_the_execution} takes string literal as its first argument")
+        answer_token, answer_value = tokens[1]
+        if answer_token != TokenType.STRING_LITERAL:
+            raise SyntaxError(f"{name_of_the_execution} takes string literal as its second argument")
+        return Execution(name_of_the_execution, (place_value, answer_value))
+    if value == "IF":
+        name_of_the_execution = ExecutionType.IF
+        tokens = check_paren(tokens, name_of_the_execution)
+        sep_tokens = seperate_by_token(tokens)
+        if len(sep_tokens) != 2:
+            raise SyntaxError(f"IF needs at least 2 arguments to you've given {len(sep_tokens)}")
+        first_part, second_part = sep_tokens
+        if len(first_part) != 1:
+            if first_part[0][0] == TokenType.WORD:
+                first_part = get_parse_execution_by_token(first_part)
+            else:
+                raise SyntaxError(f"Wrong token for IF {first_part}")
+        else:
+            first_part = first_part[0]
+        print_debug(*first_part, sep="\n")
+        print_debug(*second_part, sep="\n")
+        if second_part[0][0] != TokenType.WORD:
+            raise SyntaxError("Second part of IF should be an execution")
+        second_part_as_execution = get_parse_execution_by_token(second_part)
+
+        print_error(*tokens, sep="\n")
+        return Execution(name_of_the_execution, (first_part, second_part_as_execution))
 
     raise SyntaxError(f"This is a unknown WORD: {value}")
 

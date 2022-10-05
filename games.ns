@@ -2,8 +2,6 @@
 
     PRINT ("Lots of work")
     MEM ("What is this and that", ["This", "that"])
-
-
-
+    PLACE("This is _____", "place")
 
 }
